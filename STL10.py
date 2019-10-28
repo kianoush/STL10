@@ -46,16 +46,16 @@ Model
 class SimpleCNN(nn.Module):
     def __init__(self):
         super(SimpleCNN, self).__init__()
-        self.layer1 = nn.Sequential(nn.Conv2d(3,16,3,1,2),
+        self.layer1 = nn.Sequential(nn.Conv2d(3,16,2,1,1),
                                     nn.BatchNorm2d(16),
                                     nn.ReLU(),
                                     nn.MaxPool2d(2,2))
-        self.layer2 = nn.Sequential(nn.Conv2d(16,32,3,1,2),
+        self.layer2 = nn.Sequential(nn.Conv2d(16,32,2,1,1),
                                     nn.BatchNorm2d(32),
                                     nn.ReLU(),
                                     nn.MaxPool2d(2,2))
 
-        self.fc = nn.Linear(25*25*32, 10)
+        self.fc = nn.Linear(24*24*32, 10)
 
     def forward(self, x):
         out1 = self.layer1(x)
@@ -119,9 +119,6 @@ for epoch in range(epochs_num):
         if (i+1) % 100 == 0:
             print('Train, Epoch [%2d/%2d], Step [%3d/%3d], Loss: %.4f'
                   % (epoch + 1, epochs_num, i + 1, len(train_dl), loss.data.item()))
-
-
-
 
 
 """
