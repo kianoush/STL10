@@ -15,6 +15,7 @@ import torch.optim as optim
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+from model_utils import *
 
 gpu_cuda = torch.cuda.is_available()
 print('Cuda', gpu_cuda)
@@ -31,7 +32,7 @@ Load data
 train_datasets = torchvision.datasets.STL10("./Datasets", split='train', transform=transforms.Compose([
                                                                                 transforms.RandomHorizontalFlip(),
                                                                                 transforms.ColorJitter(0.1, 0.1, 0.1, 0.01),
-                                                                                transforms.RandomRotation(5),
+                                                                                transforms.RandomRotation(10 ),
                                                                                 transforms.ToTensor(),
                                                                                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
                                                                                                 ]),
@@ -76,8 +77,8 @@ class SimpleCNN(nn.Module):
         return y
 
 
-
-model = SimpleCNN()
+model = load_pretrained_resnet50(model_path=None, num_classes=10)
+#model = SimpleCNN()
 
 if gpu_cuda:
     model = model.cuda()
