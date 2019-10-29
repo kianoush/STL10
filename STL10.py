@@ -22,15 +22,21 @@ print('Cuda', gpu_cuda)
 """
 Var
 """
-batch_size = 32
-
+batch_size = 8
 
 """
 Load data
 """
 
-train_datasets = torchvision.datasets.STL10("./Datasets", split='train', transform=transforms.ToTensor(),
+train_datasets = torchvision.datasets.STL10("./Datasets", split='train', transform=transforms.Compose([
+                                                                                transforms.RandomHorizontalFlip(),
+                                                                                transforms.ColorJitter(0.1, 0.1, 0.1, 0.01),
+                                                                                transforms.RandomRotation(5),
+                                                                                transforms.ToTensor(),
+                                                                                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+                                                                                                ]),
                                                                                 download=False)
+
 test_datasets = torchvision.datasets.STL10("./Datasets", split='test', transform=transforms.ToTensor(),
                                                                                 download=False)
 
@@ -46,22 +52,27 @@ Model
 class SimpleCNN(nn.Module):
     def __init__(self):
         super(SimpleCNN, self).__init__()
-        self.layer1 = nn.Sequential(nn.Conv2d(3,16,2,1,1),
+        self.layer1 = nn.Sequential(nn.Conv2d(3,16,3,1,2),
                                     nn.BatchNorm2d(16),
                                     nn.ReLU(),
                                     nn.MaxPool2d(2,2))
-        self.layer2 = nn.Sequential(nn.Conv2d(16,32,2,1,1),
+        self.layer2 = nn.Sequential(nn.Conv2d(16,32,3,1,2),
                                     nn.BatchNorm2d(32),
                                     nn.ReLU(),
                                     nn.MaxPool2d(2,2))
-
-        self.fc = nn.Linear(24*24*32, 10)
+        self.layer3 = nn.Sequential(nn.Conv2d(32,32,3,1,2),
+                                    nn.BatchNorm2d(32),
+                                    nn.ReLU(),
+                                    nn.MaxPool2d(2,2))
+        self.fc = nn.Linear(25*25*32, 10)
 
     def forward(self, x):
         out1 = self.layer1(x)
         out2 = self.layer2(out1)
-        out2 = out2.view(out2.size(0), -1)
-        y = self.fc(out2)
+        #out2 = out2.view(out2.size(0), -1)
+        out3 = self.layer2(out2)
+        out3 = out3.view(out3.size(0), -1)
+        y = self.fc(out3)
         return y
 
 
