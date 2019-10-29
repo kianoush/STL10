@@ -60,17 +60,17 @@ class SimpleCNN(nn.Module):
                                     nn.BatchNorm2d(32),
                                     nn.ReLU(),
                                     nn.MaxPool2d(2,2))
-        self.layer3 = nn.Sequential(nn.Conv2d(32,32,3,1,2),
-                                    nn.BatchNorm2d(32),
+        self.layer3 = nn.Sequential(nn.Conv2d(32,64,3,1,2),
+                                    nn.BatchNorm2d(64),
                                     nn.ReLU(),
                                     nn.MaxPool2d(2,2))
-        self.fc = nn.Linear(25*25*32, 10)
+        self.fc = nn.Linear(13*13*64, 10)
 
     def forward(self, x):
         out1 = self.layer1(x)
         out2 = self.layer2(out1)
         #out2 = out2.view(out2.size(0), -1)
-        out3 = self.layer2(out2)
+        out3 = self.layer3(out2)
         out3 = out3.view(out3.size(0), -1)
         y = self.fc(out3)
         return y
